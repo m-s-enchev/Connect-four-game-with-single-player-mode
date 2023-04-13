@@ -1,72 +1,81 @@
 
-
-the_matrix = [[0 for _ in range(7)] for _ in range(6)]
-
-
-def print_the_matrix():
-    for x in the_matrix:
-        print(x)
+def create_matrix(rows: int, columns: int):
+    the_matrix = [[0 for _ in range(columns)] for _ in range(rows)]
+    return the_matrix
 
 
-def player_one_move():
-    player_input = int(input())
+def print_the_matrix(matrix):
+    for row in matrix:
+        print(row)
+    print('')
+
+
+def player_move(matrix, player):
+    player_input = int(input(f'Player {player} choose a column:\n'))
     matrix_column = player_input - 1
-    for i in range(len(the_matrix)-1, -1, -1):
-        if the_matrix[i][matrix_column] == 0:
-            the_matrix[i][matrix_column] = 1
+    for row in range(len(matrix)-1, -1, -1):
+        if matrix[row][matrix_column] == 0:
+            matrix[row][matrix_column] = player
             break
 
 
-def player_two_move():
-    player_input = int(input())
-    matrix_column = player_input - 1
-    for i in range(len(the_matrix)-1, -1, -1):
-        if the_matrix[i][matrix_column] == 0:
-            the_matrix[i][matrix_column] = 2
+def check_win_horizontal(matrix, player):
+    max_column = len(matrix[0]) - 4
+    for row in matrix:
+        for column in range(len(row)):
+            if row[column] == player and column <= max_column:
+                if row[column+1] == player and row[column+2] == player and row[column+3] == player:
+                    return True
+
+
+def check_win_vertical(matrix, player):
+    max_row = len(matrix) - 4
+    for row in range(len(matrix)):
+        for column in range(len(matrix[row])):
+            if matrix[row][column] == player and row <= max_row:
+                if matrix[row+1][column] == player and matrix[row+2][column] == player and matrix[row+3][column] == player:
+                    return True
+
+
+def check_win_right_diagonal(matrix, player):
+    max_column = len(matrix[0]) - 4
+    max_row = len(matrix) - 4
+    for row in range(len(matrix)):
+        for column in range(len(matrix[row])):
+            if matrix[row][column] == player and column <= max_column and row <= max_row:
+                if matrix[row+1][column+1] == player and matrix[row+2][column+2] == player and matrix[row+3][column+3] == player:
+                    return True
+
+
+def check_win_left_diagonal(matrix, player):
+    max_row = len(matrix) - 4
+    for row in range(len(matrix)):
+        for column in range(len(matrix[row])):
+            if matrix[row][column] == player and column > 2 and row <= max_row:
+                if matrix[row+1][column-1] == player and matrix[row+2][column-2] == player and matrix[row+3][column-3] == player:
+                    return True
+
+
+def gameplay():
+    rows = int(input('Please enter playing field rows:\n'))
+    columns = int(input('Please enter playing field columns:\n'))
+    matrix = create_matrix(rows, columns)
+    print_the_matrix(matrix)
+
+    while True:
+        player_move(matrix, 1)
+        print_the_matrix(matrix)
+        if check_win_horizontal(matrix, 1) or check_win_vertical(matrix, 1) or check_win_right_diagonal(matrix, 1) or check_win_left_diagonal(matrix, 1):
+            print('Player 1 won!')
             break
 
-            
-def check_win_horizontal(player):
-    for y in the_matrix:
-        for x in range(len(y)):
-            if y[x] == player and x < 4:
-                if y[x+1] == player and y[x+2] == player and y[x+3] == player:
-                    return True
+        player_move(matrix, 2)
+        print_the_matrix(matrix)
+        if check_win_horizontal(matrix, 2) or check_win_vertical(matrix, 2) or check_win_right_diagonal(matrix, 2) or check_win_left_diagonal(matrix, 2):
+            print('Player 2 won!')
+            break
 
 
-def check_win_vertical(player):
-    for y in range(len(the_matrix)):
-        for x in range(len(the_matrix[y])):
-            if the_matrix[y][x] == player and y < 3:
-                if the_matrix[y+1][x] == player and the_matrix[y+2][x] == player and the_matrix[y+3][x] == player:
-                    return True
-
-def check_win_right_diagonal(player):
-    for y in range(len(the_matrix)):
-        for x in range(len(the_matrix[y])):
-            if the_matrix[y][x] == player and x < 4 and y < 3:
-                if the_matrix[y+1][x+1] == player and the_matrix[y+2][x+2] == player and the_matrix[y+3][x+3] == player:
-                    return True
-
-def check_win_left_diagonal(player):
-    for y in range(len(the_matrix)):
-        for x in range(len(the_matrix[y])):
-            if the_matrix[y][x] == player and x > 2 and y < 3:
-                if the_matrix[y+1][x-1] == player and the_matrix[y+2][x-2] == player and the_matrix[y+3][x-3] == player:
-                    return True
-
-
-while True:
-    player_one_move()
-    print_the_matrix()
-    if check_win_horizontal(1) or check_win_vertical(1) or check_win_right_diagonal(1) or check_win_left_diagonal(1):
-        print('Player 1 won!')
-        break
-
-    player_two_move()
-    print_the_matrix()
-    if check_win_horizontal(2) or check_win_vertical(2) or check_win_right_diagonal(2) or check_win_left_diagonal(2):
-        print('Player 2 won!')
-        break
+gameplay()
 
 
