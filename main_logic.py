@@ -197,6 +197,3 @@ def choose_game_mode():
         elif mode == 2:
             gameplay_human_vs_computer()
             break
-
-
-choose_game_mode()
