@@ -137,6 +137,10 @@ def gameplay_human_vs_human():
             print('Player 1 won!')
             break
 
+        if 0 not in matrix[0]:
+            print("It's a tie! You are both either equally good or equally bad!")
+            break
+
         player_move(matrix, 2)
         print_the_matrix(matrix)
         if any([check_win_horizontal(matrix, 2),
@@ -147,7 +151,7 @@ def gameplay_human_vs_human():
             break
 
         if 0 not in matrix[0]:
-            print("It's a tie! You both either equally good or equally bad!")
+            print("It's a tie! You are both either equally good or equally bad!")
             break
 
 
@@ -165,6 +169,10 @@ def gameplay_human_vs_computer():
             print('Player 1 won!')
             break
 
+        if 0 not in matrix[0]:
+            print("It's a tie! You are both either equally good or equally bad!")
+            break
+
         decide_on_action(matrix)
         print_the_matrix(matrix)
         if any([check_win_horizontal(matrix, 2),
@@ -175,7 +183,7 @@ def gameplay_human_vs_computer():
             break
 
         if 0 not in matrix[0]:
-            print("It's a tie! You both either equally good or equally bad!")
+            print("It's a tie! You are both either equally good or equally bad!")
             break
 
 
@@ -188,7 +196,7 @@ def choose_game_mode():
             print('Please use numeric digits.')
             continue
 
-        if mode not in [1,2]:
+        if mode not in [1, 2]:
             print('Invalid choice!')
             continue
         elif mode == 1:
@@ -197,3 +205,6 @@ def choose_game_mode():
         elif mode == 2:
             gameplay_human_vs_computer()
             break
+
+
+
