@@ -34,18 +34,20 @@ def player_move(matrix, player):
 
 def check_win_horizontal(matrix, player):
     for row in matrix:
-        for column in range(len(row)-4):
+        for column in range(len(row)-3):
             if row[column: column+4] == 4*[player]:
                 return True
 
 
 def check_win_vertical(matrix, player):
-    max_row = len(matrix) - 4
-    for row in range(len(matrix)):
+    for row in range(len(matrix)-3):
         for column in range(len(matrix[row])):
-            if matrix[row][column] == player and row <= max_row:
-                if matrix[row+1][column] == player and matrix[row+2][column] == player and matrix[row+3][column] == player:
-                    return True
+            four_vertical = [matrix[row][column],
+                             matrix[row+1][column],
+                             matrix[row+2][column],
+                             matrix[row+3][column]]
+            if four_vertical == 4*[player]:
+                return True
 
 
 def check_win_right_diagonal(matrix, player):
