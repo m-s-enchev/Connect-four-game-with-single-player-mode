@@ -51,19 +51,20 @@ def check_win_vertical(matrix, player):
 
 
 def check_win_right_diagonal(matrix, player):
-    max_column = len(matrix[0]) - 4
-    max_row = len(matrix) - 4
-    for row in range(len(matrix)):
-        for column in range(len(matrix[row])):
-            if matrix[row][column] == player and column <= max_column and row <= max_row:
-                if matrix[row+1][column+1] == player and matrix[row+2][column+2] == player and matrix[row+3][column+3] == player:
-                    return True
+    for row in range(len(matrix)-3):
+        for column in range(len(matrix[row])-3):
+            four_right_diag = [matrix[row][column],
+                               matrix[row + 1][column+1],
+                               matrix[row + 2][column+2],
+                               matrix[row + 3][column+3]]
+            if four_right_diag == 4*[player]:
+                return True
 
 
 def check_win_left_diagonal(matrix, player):
     max_row = len(matrix) - 4
     for row in range(len(matrix)):
-        for column in range(len(matrix[row])):
+        for column in range(3, len(matrix[row])):
             if matrix[row][column] == player and column >= 3 and row <= max_row:
                 if matrix[row+1][column-1] == player and matrix[row+2][column-2] == player and matrix[row+3][column-3] == player:
                     return True
