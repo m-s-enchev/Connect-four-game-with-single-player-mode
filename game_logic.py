@@ -1,5 +1,6 @@
 from computer_player import *
 from time import sleep
+from collections import deque
 
 green = "\033[0;32m"
 red = "\033[0;31m"
@@ -140,31 +141,24 @@ def print_the_matrix(matrix):
 def gameplay_human_vs_human():
     matrix = create_matrix()
     print_the_matrix(matrix)
+    players = deque([1, 2])
 
     while True:
-        player_move(matrix, 1)
+        player = players[0]
+        player_move(matrix, player)
         print_the_matrix(matrix)
-        if any([check_win_horizontal(matrix, 1),
-                check_win_vertical(matrix, 1),
-                check_win_right_diagonal(matrix, 1),
-                check_win_left_diagonal(matrix, 1)]):
-            print('Player 1 won!')
+        if any([check_win_horizontal(matrix, player),
+                check_win_vertical(matrix, player),
+                check_win_right_diagonal(matrix, player),
+                check_win_left_diagonal(matrix, player)]):
+            print(f'Player {player} won!')
             break
 
-        if check_for_a_tie(matrix):
+        elif check_for_a_tie(matrix):
             break
 
-        player_move(matrix, 2)
-        print_the_matrix(matrix)
-        if any([check_win_horizontal(matrix, 2),
-                check_win_vertical(matrix, 2),
-                check_win_right_diagonal(matrix, 2),
-                check_win_left_diagonal(matrix, 2)]):
-            print('Player 2 won!')
-            break
-
-        if check_for_a_tie(matrix):
-            break
+        old_player = players.popleft()
+        players.append(old_player)
 
 
 def gameplay_human_vs_computer():
@@ -176,7 +170,7 @@ def gameplay_human_vs_computer():
         print_the_matrix(matrix)
         if any([check_win_horizontal(matrix, 1),
                 check_win_vertical(matrix, 1),
-                check_win_right_diagonal(matrix,1),
+                check_win_right_diagonal(matrix, 1),
                 check_win_left_diagonal(matrix, 1)]):
             print('Player 1 won!')
             break
@@ -199,7 +193,9 @@ def gameplay_human_vs_computer():
 
 def choose_game_mode():
     while True:
-        mode = input('Choose game mode:\n  1. Human vs Human \n  2. Human vs Computer\n')
+        mode = input('Choose game mode:\n'
+                     '  1. Human vs Human \n'
+                     '  2. Human vs Computer\n')
         try:
             mode = int(mode)
         except ValueError:
