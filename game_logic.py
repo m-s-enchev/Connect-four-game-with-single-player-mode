@@ -1,4 +1,5 @@
 from computer_player import *
+from time import sleep
 
 green = "\033[0;32m"
 red = "\033[0;31m"
@@ -62,17 +63,29 @@ def check_win_right_diagonal(matrix, player):
 
 
 def check_win_left_diagonal(matrix, player):
-    max_row = len(matrix) - 4
-    for row in range(len(matrix)):
+    for row in range(len(matrix)-3):
         for column in range(3, len(matrix[row])):
-            if matrix[row][column] == player and column >= 3 and row <= max_row:
-                if matrix[row+1][column-1] == player and matrix[row+2][column-2] == player and matrix[row+3][column-3] == player:
-                    return True
+            four_left_diag = [matrix[row][column],
+                              matrix[row+1][column-1],
+                              matrix[row+2][column-2],
+                              matrix[row+3][column-3]]
+            if four_left_diag == 4*[player]:
+                return True
+
+
+def check_for_a_tie(matrix):
+    if 0 not in matrix[0]:
+        print("It's a tie!")
+        sleep(2)
+        print('You are both either equally good ...')
+        sleep(3)
+        print('or equally bad!')
+        return True
 
 
 def choose_number_of_rows():
     while True:
-        rows = input('Please enter playing field rows.\nThe minimum is 5.\n')
+        rows = input('Enter the number of playing field rows.\nThe minimum is 5.\n')
         try:
             rows = int(rows)
         except ValueError:
@@ -88,7 +101,7 @@ def choose_number_of_rows():
 
 def choose_number_of_columns():
     while True:
-        columns = input('Please enter playing field columns.\nThe minimum is 5.\n')
+        columns = input('Enter the number of playing field columns.\nThe minimum is 5.\n')
         try:
             columns = int(columns)
         except ValueError:
@@ -138,8 +151,7 @@ def gameplay_human_vs_human():
             print('Player 1 won!')
             break
 
-        if 0 not in matrix[0]:
-            print("It's a tie! You are both either equally good or equally bad!")
+        if check_for_a_tie(matrix):
             break
 
         player_move(matrix, 2)
@@ -151,8 +163,7 @@ def gameplay_human_vs_human():
             print('Player 2 won!')
             break
 
-        if 0 not in matrix[0]:
-            print("It's a tie! You are both either equally good or equally bad!")
+        if check_for_a_tie(matrix):
             break
 
 
@@ -170,8 +181,7 @@ def gameplay_human_vs_computer():
             print('Player 1 won!')
             break
 
-        if 0 not in matrix[0]:
-            print("It's a tie! You are both either equally good or equally bad!")
+        if check_for_a_tie(matrix):
             break
 
         decide_on_action(matrix)
@@ -183,8 +193,7 @@ def gameplay_human_vs_computer():
             print('Player 2 won!')
             break
 
-        if 0 not in matrix[0]:
-            print("It's a tie! You are both either equally good or equally bad!")
+        if check_for_a_tie(matrix):
             break
 
 
