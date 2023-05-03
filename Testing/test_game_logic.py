@@ -60,9 +60,15 @@ class TestWinConditions(unittest.TestCase):
         self.assertEqual(result, True)
 
 
-class TestChooseNumberOfRows(unittest.TestCase):
-    @patch('builtins.input', side_effect=['4', 'foo', '5'])
+class TestChooseNumberOfRowsAnaColumns(unittest.TestCase):
+    @patch('builtins.input', side_effect=['4', 'four', '5'])
     def test_choose_number_of_rows(self, mock_input):
+        with patch('sys.stdout', new=StringIO()) as fake_output:
+            self.assertEqual(choose_number_of_rows(), 5)
+            self.assertEqual(fake_output.getvalue().strip(), 'Invalid choice!\nPlease use numeric digits.')
+
+    @patch('builtins.input', side_effect=['4', 'four', '5'])
+    def test_choose_number_of_columns(self, mock_input):
         with patch('sys.stdout', new=StringIO()) as fake_output:
             self.assertEqual(choose_number_of_rows(), 5)
             self.assertEqual(fake_output.getvalue().strip(), 'Invalid choice!\nPlease use numeric digits.')
