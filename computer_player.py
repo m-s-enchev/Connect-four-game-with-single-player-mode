@@ -6,118 +6,170 @@ def identify_other_player(player):
     return other_player
 
 
-# Checks to see if there are elements different from 0 under the 3 elements needed to win horizontally.
+# Checks to see if there are elements different from 0 under the 4 elements needed to win horizontally.
 def check_foundation_horizontal(matrix, row, column):
     if row == len(matrix)-1:
         return True
-    foundation = [matrix[row-1][column+1], matrix[row-1][column+2], matrix[row-1][column+3]]
+    foundation = [matrix[row+1][col] for col in range(column, column+4)]
     if 0 not in foundation:
         return True
+
+
+# Checks to see if there are elements different from 0 under the 4 elements needed to win by right diagonal.
+def check_foundation_right_diagonal(matrix, row, column):
+    if row == len(matrix) - 1:
+        foundation = [matrix[row][column-1], matrix[row-1][column-2], matrix[row-2][column-3]]
+    else:
+        foundation = [matrix[row+1][column], matrix[row][column-1], matrix[row-1][column-2], matrix[row-2][column-3]]
+
+    if 0 not in foundation:
+        return True
+
+
+# Checks to see if there are elements different from 0 under the 4 elements needed to win by right diagonal.
+def check_foundation_left_diagonal(matrix, row, column):
+    if row == len(matrix)-1:
+        foundation = [matrix[row][column+1], matrix[row-1][column+2], matrix[row-2][column+3]]
+    else:
+        foundation = [matrix[row+1][column], matrix[row][column+1], matrix[row-1][column+2], matrix[row-2][column+3]]
+
+    if 0 not in foundation:
+        return True
+
+
+def first_zero_in_four_elements(list_of_four):
+    for i in range(len(list_of_four)):
+        if list_of_four[i] == 0:
+            return i
+
+
+def default_next_move(matrix):
+    for i in range(len(matrix[0])):
+        if matrix[0][i] == 0:
+            return i
 
 
 def check_moves_horizontal(matrix, player):
     other_player = identify_other_player(player)
     max_column = len(matrix[0]) - 4
-    moves_to_win = 4
-    sum_of_elements_to_win = 3 * player
-    next_move_column = None
+    moves_to_win = 5
+    sum_of_elements_to_win = 4 * player
+    next_move_column = default_next_move(matrix)
     for row in range(len(matrix)-1, -1, -1):
         for column in range(len(matrix[row])):
-            if matrix[row][column] == player and column <= max_column:
+            if matrix[row][column] != other_player and column <= max_column:
                 if check_foundation_horizontal(matrix, row, column):
-                    three_consecutive_positions = [matrix[row][column+1], matrix[row][column+2], matrix[row][column+3]]
-                    sum_of_elements = sum(three_consecutive_positions)
+                    four_elements = [matrix[row][column],
+                                     matrix[row][column+1],
+                                     matrix[row][column+2],
+                                     matrix[row][column+3]]
+                    sum_of_elements = sum(four_elements)
                     moves = (sum_of_elements_to_win - sum_of_elements)/player
-                    if other_player not in three_consecutive_positions and moves_to_win > moves:
+                    if other_player not in four_elements and moves_to_win > moves:
                         moves_to_win = moves
-                        next_move_column = column
+                        next_move_column = column + first_zero_in_four_elements(four_elements)
     return moves_to_win, next_move_column
-
 
 
 def check_moves_vertical(matrix, player):
     other_player = identify_other_player(player)
     min_row = 3
-    moves_to_win = 4
+    moves_to_win = 5
     sum_of_elements_to_win = 3 * player
-    next_move_column = None
+    next_move_column = default_next_move(matrix)
     for row in range(len(matrix)-1, -1, -1):
         for column in range(len(matrix[row])):
             if matrix[row][column] == player and row >= min_row:
-                three_consecutive_positions = [matrix[row-1][column], matrix[row-2][column], matrix[row-3][column]]
-                sum_of_elements = sum(three_consecutive_positions)
+                three_elements = [matrix[row-1][column],
+                                  matrix[row-2][column],
+                                  matrix[row-3][column]]
+                sum_of_elements = sum(three_elements)
                 moves = (sum_of_elements_to_win - sum_of_elements)/player
-                if other_player not in three_consecutive_positions and moves_to_win > moves:
+                if other_player not in three_elements and moves_to_win > moves:
                     moves_to_win = moves
                     next_move_column = column
     return moves_to_win, next_move_column
-
-
-# Checks to see if there are elements different from 0 under the 3 elements needed to win by right diagonal.
-def check_foundation_right_diagonal(matrix, row, column):
-    foundation = [matrix[row][column-1], matrix[row-1][column-2], matrix[row-2][column-3]]
-    if 0 not in foundation:
-        return True
 
 
 def check_moves_right_diagonal(matrix, player):
     other_player = identify_other_player(player)
     min_column = 3
     min_row = 3
-    moves_to_win = 4
-    sum_of_elements_to_win = 3 * player
-    next_move_column = None
+    moves_to_win = 5
+    sum_of_elements_to_win = 4 * player
+    next_move_column = default_next_move(matrix)
     for row in range(len(matrix) - 1, -1, -1):
         for column in range(len(matrix[row])):
-            if matrix[row][column] == player and row >= min_row and column >= min_column:
+            if matrix[row][column] != other_player and row >= min_row and column >= min_column:
                 if check_foundation_right_diagonal(matrix, row, column):
-                    three_consecutive_positions = [matrix[row-1][column-1], matrix[row-2][column-2], matrix[row-3][column-3]]
-                    sum_of_elements = sum(three_consecutive_positions)
+                    four_elements = [matrix[row][column],
+                                     matrix[row-1][column-1],
+                                     matrix[row-2][column-2],
+                                     matrix[row-3][column-3]]
+                    sum_of_elements = sum(four_elements)
                     moves = (sum_of_elements_to_win - sum_of_elements) / player
-                    if other_player not in three_consecutive_positions and moves_to_win > moves:
+                    if other_player not in four_elements and moves_to_win > moves:
                         moves_to_win = moves
-                        next_move_column = column
+                        next_move_column = column - first_zero_in_four_elements(four_elements)
     return moves_to_win, next_move_column
-
-
-# Checks to see if there are elements different from 0 under the 3 elements needed to win by right diagonal.
-def check_foundation_left_diagonal(matrix, row, column):
-    foundation = [matrix[row][column-1], matrix[row-1][column-2], matrix[row-2][column-3]]
-    if 0 not in foundation:
-        return True
 
 
 def check_moves_left_diagonal(matrix, player):
     other_player = identify_other_player(player)
     min_row = 3
     max_column = len(matrix[0]) - 4
-    moves_to_win = 4
-    sum_of_elements_to_win = 3 * player
-    next_move_column = None
+    moves_to_win = 5
+    sum_of_elements_to_win = 4 * player
+    next_move_column = default_next_move(matrix)
     for row in range(len(matrix) - 1, -1, -1):
         for column in range(len(matrix[row])):
-            if matrix[row][column] == player and row >= min_row and column <= max_column:
+            if matrix[row][column] != other_player and row >= min_row and column <= max_column:
                 if check_foundation_left_diagonal(matrix, row, column):
-                    three_consecutive_positions = [matrix[row-1][column+1], matrix[row-2][column+2], matrix[row-3][column+3]]
-                    sum_of_elements = sum(three_consecutive_positions)
+                    four_elements = [matrix[row][column],
+                                     matrix[row-1][column+1],
+                                     matrix[row-2][column+2],
+                                     matrix[row-3][column+3]]
+                    sum_of_elements = sum(four_elements)
                     moves = (sum_of_elements_to_win - sum_of_elements) / player
-                    if other_player not in three_consecutive_positions and moves_to_win > moves:
+                    if other_player not in four_elements and moves_to_win > moves:
                         moves_to_win = moves
-                        next_move_column = column
+                        next_move_column = column + first_zero_in_four_elements(four_elements)
     return moves_to_win, next_move_column
 
 
 def next_best_move(matrix, player):
-    moves_h, column_h = check_moves_horizontal(matrix, player)
-    moves_v, column_v = check_moves_vertical(matrix, player)
-    moves_r, column_r = check_moves_right_diagonal(matrix, player)
-    moves_l, column_l = check_moves_left_diagonal(matrix, player)
-    results_of_checks = {moves_h: column_h, moves_v: column_v, moves_r: column_r, moves_l: column_l}
-    best_move = min(results_of_checks)
-    return results_of_checks[best_move]
+    results_of_checks = [check_moves_horizontal(matrix, player),
+                         check_moves_vertical(matrix, player),
+                         check_moves_right_diagonal(matrix, player),
+                         check_moves_left_diagonal(matrix, player)]
+    best_move = 6
+    best_column = 0
+    for i in range(len(results_of_checks)):
+        if results_of_checks[i][0] < best_move:
+            best_move = results_of_checks[i][0]
+            best_column = results_of_checks[i][1]
+    return best_move, best_column
 
 
+def computer_player_move(matrix, column):
+    red = "\033[0;31m"
+    for row in range(len(matrix) - 1, -1, -1):
+        if matrix[row][column] == 0:
+            matrix[row][column] = 2
+            print(red + f'Computer player chose column {column+1}')
+            break
 
+
+def decide_on_action(matrix):
+    own_move, own_column = next_best_move(matrix, 2)
+    enemy_move, enemy_column = next_best_move(matrix, 1)
+    if own_move <= enemy_move:
+        computer_player_move(matrix, own_column)
+    else:
+        computer_player_move(matrix, enemy_column)
+
+
+# check of you are helping enemy with best move
 
 
 
