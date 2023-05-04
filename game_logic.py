@@ -7,6 +7,62 @@ red = "\033[0;31m"
 nocolor = "\033[0m"
 
 
+def choose_number_of_rows():
+    while True:
+        rows = input('Enter the number of playing field rows.\n'
+                     'The minimum is 5.\n')
+        try:
+            rows = int(rows)
+        except ValueError:
+            print('Please use numeric digits.')
+            continue
+
+        if rows < 5:
+            print('Invalid choice!')
+            continue
+        else:
+            return rows
+
+
+def choose_number_of_columns():
+    while True:
+        columns = input('Enter the number of playing field columns.\n'
+                        'The minimum is 5.\n')
+        try:
+            columns = int(columns)
+        except ValueError:
+            print('Please use numeric digits.')
+            continue
+
+        if columns < 5:
+            print('Invalid choice!')
+            continue
+        else:
+            return columns
+
+
+def create_matrix():
+    rows = choose_number_of_rows()
+    columns = choose_number_of_columns()
+    the_matrix = [[0 for _ in range(columns)] for _ in range(rows)]
+    return the_matrix
+
+
+def print_the_matrix(matrix):
+    print('')
+    for row in matrix:
+        new_row = '     '
+        for el in row:
+            if el == 1:
+                new_row += '  ' + green + str(el)
+            elif el == 2:
+                new_row += '  ' + red + str(el)
+            else:
+                new_row += '  ' + nocolor + str(el)
+        print(new_row)
+    print(nocolor)
+
+
 def player_move(matrix, player):
     if player == 1:
         color = green
@@ -78,64 +134,10 @@ def check_for_a_tie(matrix):
     if 0 not in matrix[0]:
         print("It's a tie!")
         sleep(2)
-        print('You are both either equally good ...')
+        print('You are both equally good ...')
         sleep(3)
         print('or equally bad!')
         return True
-
-
-def choose_number_of_rows():
-    while True:
-        rows = input('Enter the number of playing field rows.\nThe minimum is 5.\n')
-        try:
-            rows = int(rows)
-        except ValueError:
-            print('Please use numeric digits.')
-            continue
-
-        if rows < 5:
-            print('Invalid choice!')
-            continue
-        else:
-            return rows
-
-
-def choose_number_of_columns():
-    while True:
-        columns = input('Enter the number of playing field columns.\nThe minimum is 5.\n')
-        try:
-            columns = int(columns)
-        except ValueError:
-            print('Please use numeric digits.')
-            continue
-
-        if columns < 5:
-            print('Invalid choice!')
-            continue
-        else:
-            return columns
-
-
-def create_matrix():
-    rows = choose_number_of_rows()
-    columns = choose_number_of_columns()
-    the_matrix = [[0 for _ in range(columns)] for _ in range(rows)]
-    return the_matrix
-
-
-def print_the_matrix(matrix):
-    print('')
-    for row in matrix:
-        new_row = '     '
-        for el in row:
-            if el == 1:
-                new_row += '  ' + green + str(el)
-            elif el == 2:
-                new_row += '  ' + red + str(el)
-            else:
-                new_row += '  ' + nocolor + str(el)
-        print(new_row)
-    print(nocolor)
 
 
 def gameplay_human_vs_human():
@@ -211,6 +213,5 @@ def choose_game_mode():
         elif mode == 2:
             gameplay_human_vs_computer()
             break
-
 
 
