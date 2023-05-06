@@ -10,7 +10,7 @@ def identify_other_player(player):
 def check_foundation_horizontal(matrix, row, column):
     if row == len(matrix)-1:
         return True
-    foundation = [matrix[row+1][col] for col in range(column, column+4)]
+    foundation = [matrix[row+1][column+i] for i in range(4)]
     if 0 not in foundation:
         return True
 
@@ -18,9 +18,9 @@ def check_foundation_horizontal(matrix, row, column):
 # Checks to see if there are elements different from 0 under the 4 elements needed to win by right diagonal.
 def check_foundation_right_diagonal(matrix, row, column):
     if row == len(matrix) - 1:
-        foundation = [matrix[row][column-1], matrix[row-1][column-2], matrix[row-2][column-3]]
+        foundation = [matrix[row-i][column-1-i] for i in range(3)]
     else:
-        foundation = [matrix[row+1][column], matrix[row][column-1], matrix[row-1][column-2], matrix[row-2][column-3]]
+        foundation = [matrix[row+1-i][column-i] for i in range(4)]
 
     if 0 not in foundation:
         return True
@@ -29,9 +29,9 @@ def check_foundation_right_diagonal(matrix, row, column):
 # Checks to see if there are elements different from 0 under the 4 elements needed to win by right diagonal.
 def check_foundation_left_diagonal(matrix, row, column):
     if row == len(matrix)-1:
-        foundation = [matrix[row][column+1], matrix[row-1][column+2], matrix[row-2][column+3]]
+        foundation = [matrix[row-i][column+1+i] for i in range(3)]
     else:
-        foundation = [matrix[row+1][column], matrix[row][column+1], matrix[row-1][column+2], matrix[row-2][column+3]]
+        foundation = [matrix[row+1-i][column+i] for i in range(4)]
 
     if 0 not in foundation:
         return True
@@ -51,21 +51,17 @@ def default_next_move(matrix):
 
 def check_moves_horizontal(matrix, player):
     other_player = identify_other_player(player)
-    max_column = len(matrix[0]) - 4
     moves_to_win = 5
     sum_of_elements_to_win = 4 * player
     next_move_column = default_next_move(matrix)
     for row in range(len(matrix)-1, -1, -1):
-        for column in range(len(matrix[row])):
-            if matrix[row][column] != other_player and column <= max_column:
+        for column in range(len(matrix[row])-3):
+            four_elements = matrix[row][column:column+4]
+            if other_player not in four_elements:
                 if check_foundation_horizontal(matrix, row, column):
-                    four_elements = [matrix[row][column],
-                                     matrix[row][column+1],
-                                     matrix[row][column+2],
-                                     matrix[row][column+3]]
                     sum_of_elements = sum(four_elements)
                     moves = (sum_of_elements_to_win - sum_of_elements)/player
-                    if other_player not in four_elements and moves_to_win > moves:
+                    if moves_to_win > moves:
                         moves_to_win = moves
                         next_move_column = column + first_zero_in_four_elements(four_elements)
     return moves_to_win, next_move_column
@@ -73,19 +69,16 @@ def check_moves_horizontal(matrix, player):
 
 def check_moves_vertical(matrix, player):
     other_player = identify_other_player(player)
-    min_row = 3
     moves_to_win = 5
-    sum_of_elements_to_win = 3 * player
+    sum_of_elements_to_win = 4 * player
     next_move_column = default_next_move(matrix)
-    for row in range(len(matrix)-1, -1, -1):
+    for row in range(len(matrix)-1, 2, -1):
         for column in range(len(matrix[row])):
-            if matrix[row][column] == player and row >= min_row:
-                three_elements = [matrix[row-1][column],
-                                  matrix[row-2][column],
-                                  matrix[row-3][column]]
-                sum_of_elements = sum(three_elements)
+            four_elements = [matrix[row-i][column] for i in range(4)]
+            if other_player not in four_elements:
+                sum_of_elements = sum(four_elements)
                 moves = (sum_of_elements_to_win - sum_of_elements)/player
-                if other_player not in three_elements and moves_to_win > moves:
+                if moves_to_win > moves:
                     moves_to_win = moves
                     next_move_column = column
     return moves_to_win, next_move_column
