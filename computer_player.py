@@ -6,35 +6,39 @@ def identify_other_player(player):
     return other_player
 
 
-# Checks to see if there are elements different from 0 under the 4 elements needed to win horizontally.
-def check_foundation_horizontal(matrix, row, column):
-    if row == len(matrix)-1:
-        return True
-    foundation = [matrix[row+1][column+i] for i in range(4)]
-    if 0 not in foundation:
-        return True
+class CheckFoundation:
+    """Checks to see if there are elements different from 0 under the 4 elements needed to win"""
+    def __init__(self, matrix, row, column):
+        self.matrix = matrix
+        self.row = row
+        self.column = column
+        self.bottom = len(matrix)-1
 
+    def horizontal(self):
+        if self.row == self.bottom:
+            return True
+        foundation = [self.matrix[self.row+1][self.column+i] for i in range(4)]
 
-# Checks to see if there are elements different from 0 under the 4 elements needed to win by right diagonal.
-def check_foundation_right_diagonal(matrix, row, column):
-    if row == len(matrix) - 1:
-        foundation = [matrix[row-i][column-1-i] for i in range(3)]
-    else:
-        foundation = [matrix[row+1-i][column-i] for i in range(4)]
+        if 0 not in foundation:
+            return True
 
-    if 0 not in foundation:
-        return True
+    def right_diagonal(self):
+        if self.row == self.bottom:
+            foundation = [self.matrix[self.row-i][self.column-1-i] for i in range(3)]
+        else:
+            foundation = [self.matrix[self.row+1-i][self.column-i] for i in range(4)]
 
+        if 0 not in foundation:
+            return True
 
-# Checks to see if there are elements different from 0 under the 4 elements needed to win by right diagonal.
-def check_foundation_left_diagonal(matrix, row, column):
-    if row == len(matrix)-1:
-        foundation = [matrix[row-i][column+1+i] for i in range(3)]
-    else:
-        foundation = [matrix[row+1-i][column+i] for i in range(4)]
+    def left_diagonal(self):
+        if self.row == self.bottom:
+            foundation = [self.matrix[self.row-i][self.column+1+i] for i in range(3)]
+        else:
+            foundation = [self.matrix[self.row+1-i][self.column+i] for i in range(4)]
 
-    if 0 not in foundation:
-        return True
+        if 0 not in foundation:
+            return True
 
 
 def first_zero_in_four_elements(list_of_four):
@@ -49,89 +53,69 @@ def default_next_move(matrix):
             return i
 
 
-def check_moves_horizontal(matrix, player):
-    other_player = identify_other_player(player)
-    moves_to_win = 5
-    sum_of_elements_to_win = 4 * player
-    next_move_column = default_next_move(matrix)
-    for row in range(len(matrix)-1, -1, -1):
-        for column in range(len(matrix[row])-3):
-            four_elements = matrix[row][column:column+4]
-            if check_foundation_horizontal(matrix, row, column):
-                if other_player not in four_elements:
+class CheckMovesToWin:
+    MOVES_TO_WIN = 5
+
+    def __init__(self, matrix, player):
+        self.player = player
+        self.matrix = matrix
+        self.other_player = identify_other_player(self.player)
+        self.sum_of_elements_to_win = 4 * self.player
+        self.next_move_column = default_next_move(matrix)
+
+    def horizontal(self):
+        for row in range(len(self.matrix)-1, -1, -1):
+            for column in range(len(self.matrix[row])-3):
+                four_elements = self.matrix[row][column:column+4]
+                if CheckFoundation(self.matrix, row, column).horizontal():
+                    if self.other_player not in four_elements:
+                        sum_of_elements = sum(four_elements)
+                        moves = (self.sum_of_elements_to_win - sum_of_elements)/self.player
+                        if self.MOVES_TO_WIN > moves:
+                            self.MOVES_TO_WIN = moves
+                            self.next_move_column = column + first_zero_in_four_elements(four_elements)
+
+    def vertical(self):
+        for row in range(len(self.matrix)-1, 2, -1):
+            for column in range(len(self.matrix[row])):
+                four_elements = [self.matrix[row-i][column] for i in range(4)]
+                if self.other_player not in four_elements:
                     sum_of_elements = sum(four_elements)
-                    moves = (sum_of_elements_to_win - sum_of_elements)/player
-                    if moves_to_win > moves:
-                        moves_to_win = moves
-                        next_move_column = column + first_zero_in_four_elements(four_elements)
-    return moves_to_win, next_move_column
+                    moves = (self.sum_of_elements_to_win - sum_of_elements)/self.player
+                    if self.MOVES_TO_WIN > moves:
+                        self.MOVES_TO_WIN = moves
+                        self.next_move_column = column
 
+    def right_diagonal(self):
+        for row in range(len(self.matrix) - 1, 2, -1):
+            for column in range(3, len(self.matrix[row])):
+                four_elements = [self.matrix[row-i][column-i] for i in range(4)]
+                if CheckFoundation(self.matrix, row, column).right_diagonal():
+                    if self.other_player not in four_elements:
+                        sum_of_elements = sum(four_elements)
+                        moves = (self.sum_of_elements_to_win - sum_of_elements) / self.player
+                        if self.MOVES_TO_WIN > moves:
+                            self.MOVES_TO_WIN = moves
+                            self.next_move_column = column - first_zero_in_four_elements(four_elements)
 
-def check_moves_vertical(matrix, player):
-    other_player = identify_other_player(player)
-    moves_to_win = 5
-    sum_of_elements_to_win = 4 * player
-    next_move_column = default_next_move(matrix)
-    for row in range(len(matrix)-1, 2, -1):
-        for column in range(len(matrix[row])):
-            four_elements = [matrix[row-i][column] for i in range(4)]
-            if other_player not in four_elements:
-                sum_of_elements = sum(four_elements)
-                moves = (sum_of_elements_to_win - sum_of_elements)/player
-                if moves_to_win > moves:
-                    moves_to_win = moves
-                    next_move_column = column
-    return moves_to_win, next_move_column
+    def left_diagonal(self):
+        for row in range(len(self.matrix) - 1, 2, -1):
+            for column in range(len(self.matrix[row])-3):
+                four_elements = [self.matrix[row-i][column+i] for i in range(4)]
+                if CheckFoundation(self.matrix, row, column).left_diagonal():
+                    if self.other_player not in four_elements:
+                        sum_of_elements = sum(four_elements)
+                        moves = (self.sum_of_elements_to_win - sum_of_elements) / self.player
+                        if self.MOVES_TO_WIN > moves:
+                            self.MOVES_TO_WIN = moves
+                            self.next_move_column = column + first_zero_in_four_elements(four_elements)
 
-
-def check_moves_right_diagonal(matrix, player):
-    other_player = identify_other_player(player)
-    moves_to_win = 5
-    sum_of_elements_to_win = 4 * player
-    next_move_column = default_next_move(matrix)
-    for row in range(len(matrix) - 1, 2, -1):
-        for column in range(3, len(matrix[row])):
-            four_elements = [matrix[row-i][column-i] for i in range(4)]
-            if check_foundation_right_diagonal(matrix, row, column):
-                if other_player not in four_elements:
-                    sum_of_elements = sum(four_elements)
-                    moves = (sum_of_elements_to_win - sum_of_elements) / player
-                    if moves_to_win > moves:
-                        moves_to_win = moves
-                        next_move_column = column - first_zero_in_four_elements(four_elements)
-    return moves_to_win, next_move_column
-
-
-def check_moves_left_diagonal(matrix, player):
-    other_player = identify_other_player(player)
-    moves_to_win = 5
-    sum_of_elements_to_win = 4 * player
-    next_move_column = default_next_move(matrix)
-    for row in range(len(matrix) - 1, 2, -1):
-        for column in range(len(matrix[row])-3):
-            four_elements = [matrix[row-i][column+i] for i in range(4)]
-            if check_foundation_left_diagonal(matrix, row, column):
-                if other_player not in four_elements:
-                    sum_of_elements = sum(four_elements)
-                    moves = (sum_of_elements_to_win - sum_of_elements) / player
-                    if moves_to_win > moves:
-                        moves_to_win = moves
-                        next_move_column = column + first_zero_in_four_elements(four_elements)
-    return moves_to_win, next_move_column
-
-
-def next_best_move(matrix, player):
-    results_of_checks = [check_moves_horizontal(matrix, player),
-                         check_moves_vertical(matrix, player),
-                         check_moves_right_diagonal(matrix, player),
-                         check_moves_left_diagonal(matrix, player)]
-    best_move = 6
-    best_column = 0
-    for i in range(len(results_of_checks)):
-        if results_of_checks[i][0] < best_move:
-            best_move = results_of_checks[i][0]
-            best_column = results_of_checks[i][1]
-    return best_move, best_column
+    def best_next_move(self):
+        self.horizontal()
+        self.vertical()
+        self.right_diagonal()
+        self.left_diagonal()
+        return self.MOVES_TO_WIN, self.next_move_column
 
 
 def computer_player_move(matrix, column):
@@ -144,8 +128,8 @@ def computer_player_move(matrix, column):
 
 
 def decide_on_action(matrix):
-    own_move, own_column = next_best_move(matrix, 2)
-    enemy_move, enemy_column = next_best_move(matrix, 1)
+    own_move, own_column = CheckMovesToWin(matrix, 2).best_next_move()
+    enemy_move, enemy_column = CheckMovesToWin(matrix, 1).best_next_move()
     if own_move <= enemy_move:
         computer_player_move(matrix, own_column)
     else:
