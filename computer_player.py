@@ -54,13 +54,13 @@ def default_next_move(matrix):
 
 
 class CheckMovesToWin:
-    MOVES_TO_WIN = 5
 
     def __init__(self, matrix, player):
         self.player = player
         self.matrix = matrix
         self.other_player = identify_other_player(self.player)
         self.sum_of_elements_to_win = 4 * self.player
+        self.moves_to_win = 5
         self.next_move_column = default_next_move(matrix)
 
     def horizontal(self):
@@ -71,8 +71,8 @@ class CheckMovesToWin:
                     if self.other_player not in four_elements:
                         sum_of_elements = sum(four_elements)
                         moves = (self.sum_of_elements_to_win - sum_of_elements)/self.player
-                        if self.MOVES_TO_WIN > moves:
-                            self.MOVES_TO_WIN = moves
+                        if self.moves_to_win > moves:
+                            self.moves_to_win = moves
                             self.next_move_column = column + first_zero_in_four_elements(four_elements)
 
     def vertical(self):
@@ -82,8 +82,8 @@ class CheckMovesToWin:
                 if self.other_player not in four_elements:
                     sum_of_elements = sum(four_elements)
                     moves = (self.sum_of_elements_to_win - sum_of_elements)/self.player
-                    if self.MOVES_TO_WIN > moves:
-                        self.MOVES_TO_WIN = moves
+                    if self.moves_to_win > moves:
+                        self.moves_to_win = moves
                         self.next_move_column = column
 
     def right_diagonal(self):
@@ -94,8 +94,8 @@ class CheckMovesToWin:
                     if self.other_player not in four_elements:
                         sum_of_elements = sum(four_elements)
                         moves = (self.sum_of_elements_to_win - sum_of_elements) / self.player
-                        if self.MOVES_TO_WIN > moves:
-                            self.MOVES_TO_WIN = moves
+                        if self.moves_to_win > moves:
+                            self.moves_to_win = moves
                             self.next_move_column = column - first_zero_in_four_elements(four_elements)
 
     def left_diagonal(self):
@@ -106,8 +106,8 @@ class CheckMovesToWin:
                     if self.other_player not in four_elements:
                         sum_of_elements = sum(four_elements)
                         moves = (self.sum_of_elements_to_win - sum_of_elements) / self.player
-                        if self.MOVES_TO_WIN > moves:
-                            self.MOVES_TO_WIN = moves
+                        if self.moves_to_win > moves:
+                            self.moves_to_win = moves
                             self.next_move_column = column + first_zero_in_four_elements(four_elements)
 
     def best_next_move(self):
@@ -115,7 +115,7 @@ class CheckMovesToWin:
         self.vertical()
         self.right_diagonal()
         self.left_diagonal()
-        return self.MOVES_TO_WIN, self.next_move_column
+        return self.moves_to_win, self.next_move_column
 
 
 def computer_player_move(matrix, column):
@@ -136,7 +136,7 @@ def decide_on_action(matrix):
         computer_player_move(matrix, enemy_column)
 
 
-# check of you are helping enemy with best move
+# check if you are helping enemy with best move
 
 
 
