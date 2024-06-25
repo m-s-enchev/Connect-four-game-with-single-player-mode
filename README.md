@@ -8,3 +8,4 @@ The objective is to place four of your marks in a line - horizontal, vertical or
 
 The game has a 'Human vs Human' mode, where 2 players take turns. But it also has a Human vs Computer mode.
 
+Please use the requirements.txt file to setup eviorment.
